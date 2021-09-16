@@ -1,11 +1,12 @@
 import React, {useContext} from 'react';
 import {Switch, Route, Redirect} from "react-router-dom";
+import {observer} from "mobx-react-lite";
 import {authRoutes, publicRoutes} from "../routes";
 import {MAIN_ROUTE} from "../utils/consts";
 import {Context} from "../index";
 
 
-const AppRouter = () => {
+const AppRouter = observer(() => {
 
     const {user} = useContext(Context)
     console.log(user)
@@ -25,6 +26,6 @@ const AppRouter = () => {
             <Redirect to={MAIN_ROUTE}/>
         </Switch>
     );
-};
+});
 
 export default AppRouter;

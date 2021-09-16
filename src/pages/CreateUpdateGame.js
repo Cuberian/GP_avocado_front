@@ -9,57 +9,61 @@ import 'react-quill/dist/quill.snow.css';
 import {formats, modules} from "../utils/editor-tools";
 import Tag from "../components/Tag";
 import {useForm} from "react-hook-form";
-import {createNews, getById, getCover, updateNews} from "../http/newsAPI";
+import {createGame, getById, getCover, updateGame} from "../http/gamesAPI";
 
-const CreateUpdateNews = () => {
+const CreateUpdateGame = () => {
     let { id } = useParams();
+
     const {user} = useContext(Context);
     const location = useLocation();
     const history = useHistory();
+
     const isUpdate = location.pathname.split('/').includes('update')
-    const [newsText, setNewsText] = useState('')
-    const [newsTags, setNewsTags] = useState([])
+    const [gamePlatforms, setGamePlatforms] = useState([])
+    const [gameGenres, setGameGenres] = useState([])
+    const [gameReleaseDate, setGameReleaseDate] = useState()
+    const [gameDeveloper, setGameDeveloper] = useState('')
+    const [gamePublisher, setGamePublisher] = useState('')
     const [coverAction, setCoverAction] = useState()
     const [coverImage, setCoverImage] = useState()
 
 
-    const tagRef = useRef(null)
+    const platformsRef = useRef(null)
 
     useEffect(() => {
         if(isUpdate) {
-            getById(id).then( news => {
-                console.log(news)
-                setValue('newsTitle', news.header)
-                setNewsText(news.text)
-                setNewsTags(news.tags.map(item => item.value))
-                if(news.coverImage)
+            getById(id).then( game => {
+                console.log(game)
+                setValue('gameTitle', game.label)
+                setGamePlatforms(game.platforms.map(item => item.value))
+                if(game.coverImage)
                 {
-                    setCoverImage(process.env.REACT_APP_API_URL + 'news/covers/' + news.coverImage)
+                    setCoverImage(process.env.REACT_APP_API_URL + 'game/covers/' + game.coverImage)
                 }
             })
         }
     }, [])
 
-    const removeTagHandler = (tagName) => {
-        setNewsTags(newsTags.filter(el => el !== tagName))
+    const removePlatformHandler = (tagName) => {
+        setGamePlatforms(gamePlatforms.filter(el => el !== tagName))
     }
-    const addTagHandler = () => {
-        const tagName = tagRef.current.value
-        if(tagName && tagName.trim() !== '')
+    const addPlatformHandler = () => {
+        const platformsName = platformsRef.current.value
+        if(platformsName && platformsName.trim() !== '')
         {
-            const tags = tagName.split(',').map(item => item.trim())
-            setNewsTags([...new Set([...newsTags, ...tags])])
+            const platforms = platformsName.split(',').map(item => item.trim())
+            setGamePlatforms([...new Set([...gamePlatforms, ...platforms])])
         }
 
-        tagRef.current.value = ''
+        platformsRef.current.value = ''
     }
 
     const {register, handleSubmit, formState: { errors }, setValue} = useForm();
 
-    const changeText = text => {
-        setNewsText(text)
-        setValue('text', text)
-    }
+    // const changeText = text => {
+    //     setNewsText(text)
+    //     setValue('text', text)
+    // }
 
     const removeImage = () => {
         setCoverImage(null)
@@ -77,42 +81,42 @@ const CreateUpdateNews = () => {
         }
     }
 
-    const publishNews = async ({newsTitle, text, image}) => {
+    const publishGame = async ({gameTitle, image}) => {
         if(isUpdate)
         {
-            const updatedNews = await updateNews(id, newsTitle,text, newsTags, image, coverAction)
-            history.push('/news')
+            const updatedGame = await updateGame(id, gameTitle, gameReleaseDate, gamePlatforms, gameGenres, gameDeveloper, gamePublisher, coverAction, image)
+            history.push('/games')
         } else {
-            const news = await createNews(newsTitle, text, user.user.id, newsTags, image)
-            history.push('/news')
+            const createdGame = await createGame(gameTitle, gameReleaseDate, gamePlatforms, gameGenres, gameDeveloper, gamePublisher, image)
+            history.push('/games')
         }
     }
 
 
     return (
         <div className="w-full flex-grow py-10">
-            <form onSubmit={handleSubmit(publishNews)} className="mx-auto max-w-5xl flex flex-col px-5 py-10 bg-white rounded-md space-y-5">
+            <form onSubmit={handleSubmit(publishGame)} className="mx-auto max-w-5xl flex flex-col px-5 py-10 bg-white rounded-md space-y-5">
                 <p className="font-pressStart text-lg text-center">{isUpdate ? 'Обновить' : 'Создать'} новость</p>
-                <input className="py-3 font-pressStart focus:outline-none" placeholder="Название новости"
-                       { ...register("newsTitle", {required: 'Обязательное поле для заполнения'})}/>
-                <ReactQuill onChange={(value) => changeText(value)} modules={modules} formats={formats} value={newsText}/>
+                <input className="py-3 font-pressStart focus:outline-none" placeholder="Название игры"
+                       { ...register("gameTitle", {required: 'Обязательное поле для заполнения'})}/>
+                {/*<ReactQuill onChange={(value) => changeText(value)} modules={modules} formats={formats} value={newsText}/>*/}
                 <hr/>
                 <div className="flex justify-between">
                     <input
-                        ref={tagRef}
+                        ref={platformsRef}
                         type="text"
                         className="appearance-none block w-5/6 bg-white text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Введите тег или теги чериз запятую"/>
                     <button
                         type="button"
                         className="py-2 px-3 bg-avocado-400 text-avocado-800 rounded-md focus:outline-none"
-                        onClick={addTagHandler}>
+                        onClick={addPlatformHandler}>
                         Добавить
                     </button>
                 </div>
                 <div>
-                    {newsTags && newsTags.map((item, index) => {
-                        return <Tag key={'tag_'+index} tagName={item} removeHandler={removeTagHandler}/>
+                    {gamePlatforms && gamePlatforms.map((item, index) => {
+                        return <Tag key={'tag_'+index} tagName={item} removeHandler={removePlatformHandler}/>
                     })}
                 </div>
                 <hr/>
@@ -146,4 +150,4 @@ const CreateUpdateNews = () => {
     );
 };
 
-export default CreateUpdateNews;
+export default CreateUpdateGame;

@@ -1,17 +1,17 @@
 import {$authHost, $host} from "./index";
 
-export const createGame = async (label, release_date, platforms, genres, developer, publisher, image) => {
+export const createGame = async (label, release_date, platforms, genres, developer, publisher, image=null) => {
     const { data: createdGameData } = await $authHost.post('/games',
         {label, release_date, platforms, genres, developer, publisher})
 
-    if(image) {
-        const formData = new FormData()
-        formData.append('newsId', String(createdGameData.id))
-        formData.append('file', image)
-        const {data: updatedGameData} = await $authHost.post('games/covers/upload',
-            formData, {headers: {'Content-Type': 'multipart/form-data'}})
-        return updatedGameData
-    }
+    // if(image) {
+    //     const formData = new FormData()
+    //     formData.append('newsId', String(createdGameData.id))
+    //     formData.append('file', image)
+    //     const {data: updatedGameData} = await $authHost.post('games/covers/upload',
+    //         formData, {headers: {'Content-Type': 'multipart/form-data'}})
+    //     return updatedGameData
+    // }
     return createdGameData
 }
 

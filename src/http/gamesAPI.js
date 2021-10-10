@@ -1,8 +1,8 @@
 import {$authHost, $host} from "./index";
 
-export const createGame = async (label, release_date, platforms, genres, developer, publisher, image=null) => {
+export const createGame = async (title, releaseDate, platforms, genres, studios, publishers, image=null) => {
     const { data: createdGameData } = await $authHost.post('/games',
-        {label, release_date, platforms, genres, developer, publisher})
+        {title, releaseDate, platforms, genres, studios, publishers})
 
     // if(image) {
     //     const formData = new FormData()

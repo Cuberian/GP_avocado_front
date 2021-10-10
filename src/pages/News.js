@@ -26,19 +26,19 @@ const News = observer(() => {
 
     return (
         <div className="flex-grow py-10">
-            <div className='max-w-5xl mx-auto bg-white flex min-h-44'>
-                <div className="w-1/5 bg-specialGray-600 bg-opacity-50 text-white py-3 flex flex-col font-pressStart">
-                    <p className="text-center pb-4">Категории</p>
-                    {categories.map(item =>
-                        <span key={'category_' + item.name} className={`py-3 px-4 
-                        ${selectedSection === item.name ? 
-                            'bg-avocado-400 text-avocado-800' : 'hover:bg-avocado-400 hover:text-avocado-800'} 
-                            w-full uppercase text-xs`}
-                            onClick={() => setSelectedSection(item.name)}>{ item.name }</span>
-                    )}
+            <div className='max-w-5xl mx-auto bg-white flex min-h-2/4'>
+                {/*<div className="w-1/5 bg-specialGray-600 bg-opacity-50 text-white py-3 flex flex-col font-pressStart">*/}
+                {/*    <p className="text-center pb-4">Категории</p>*/}
+                {/*    {categories.map(item =>*/}
+                {/*        <span key={'category_' + item.name} className={`py-3 px-4 */}
+                {/*        ${selectedSection === item.name ? */}
+                {/*            'bg-avocado-400 text-avocado-800' : 'hover:bg-avocado-400 hover:text-avocado-800'} */}
+                {/*            w-full uppercase text-xs`}*/}
+                {/*            onClick={() => setSelectedSection(item.name)}>{ item.name }</span>*/}
+                {/*    )}*/}
 
-                </div>
-                <div className="flex-grow py-2 space-y-4">
+                {/*</div>*/}
+                <div className="flex-grow py-2 space-y-4 h-full">
                     <div className="flex items-center px-3">
                         <span className="font-pressStart text-2xl flex-grow text-center">Игровые новости</span>
                         {user.isAuth &&

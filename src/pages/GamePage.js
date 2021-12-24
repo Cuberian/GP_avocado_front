@@ -1,6 +1,6 @@
 import React, {Fragment, useContext, useEffect, useState} from 'react';
 import {useHistory, useParams} from "react-router-dom";
-import {getById} from "../http/gamesAPI";
+import {deleteById, getById} from "../http/gamesAPI";
 import { Popover } from '@headlessui/react'
 import moment from "moment";
 import 'moment/locale/ru'
@@ -25,8 +25,12 @@ const GamePage = () => {
         console.log('ratings', loadedRatings)
         setGameRatings(loadedRatings.map(rating =>  rating.rating))
         if(user.isAuth) {
-            setUserScore(loadedRatings.find(rating => rating.user_id === user.user.id).rating)
-            setScore(loadedRatings.find(rating => rating.user_id === user.user.id).rating)
+            const userRating = loadedRatings.find(rating => rating.user_id === user.user.id)
+            console.log('user  rating', userRating)
+            if (userRating) {
+                setUserScore(userRating.rating)
+                setScore(userRating.rating)
+            }
         }
     },  [user])
 
@@ -40,6 +44,11 @@ const GamePage = () => {
         return (gameRatings.reduce((previousValue, currentValue) => previousValue + currentValue)/( gameRatings.length * 10)) * 10
     }
 
+    const deleteGame = async () => {
+        await deleteById(id)
+        history.push('/games')
+    }
+
     return (
         <div className="flex-grow w-full py-10">
             {
@@ -51,62 +60,89 @@ const GamePage = () => {
                             <div className="px-3 py-2 bg-avocado-400 rounded font-pressStart text-white">
                                 {gameRatings.length > 0 ? makeGameScore() : 'Нет оценок'}
                             </div>
-                            <Popover className="relative">
-                                <Popover.Button
-                                    className="px-3 py-2 bg-avocado-400 rounded font-pressStart text-white flex items-center">
-                                    <span className="">Твоя оценка: { userScore }</span>
-                                </Popover.Button>
+                            {
+                                user.isAuth &&
+                                <Popover className="relative">
+                                    <Popover.Button
+                                        className="px-3 py-2 bg-avocado-400 rounded font-pressStart text-white flex items-center">
+                                        {userScore ?
+                                            <span className="">Твоя оценка: {userScore}</span>
+                                            :
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none"
+                                                 viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                                            </svg>
+                                        }
+                                    </Popover.Button>
 
-                                <Popover.Panel className="absolute z-10 bg-white w-60 my-3 p-2 rounded shadow">
-                                    {({ close }) => (
-                                        <div className="space-y-3 flex flex-col justify-center">
-                                            <div className="font-pressStart text-center flex items-center space-x-4 justify-center">
-                                                <div className="flex items-center">
-                                                    <button
-                                                        className="p-1 bg-avocado-400 rounded"
-                                                        onClick={() => changeScore(-1)}>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                                                        </svg>
-                                                    </button>
-                                                    <span className="px-4">
-                                                        { score }
-                                                    </span>
-                                                    <button
-                                                        className="p-1 bg-avocado-400 rounded"
-                                                        onClick={() => changeScore(1)}>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                                        </svg>
-                                                    </button>
+                                    <Popover.Panel className="absolute z-10 bg-white w-60 my-3 p-2 rounded shadow">
+                                        {({close}) => (
+                                            <div className="space-y-3 flex flex-col justify-center">
+                                                <div
+                                                    className="font-pressStart text-center flex items-center space-x-4 justify-center">
+                                                    <div className="flex items-center">
+                                                        <button
+                                                            className="p-1 bg-avocado-400 rounded"
+                                                            onClick={() => changeScore(-1)}>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6"
+                                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round"
+                                                                      strokeWidth={2} d="M20 12H4"/>
+                                                            </svg>
+                                                        </button>
+                                                        <span className="px-4">
+                                                            {score}
+                                                        </span>
+                                                        <button
+                                                            className="p-1 bg-avocado-400 rounded"
+                                                            onClick={() => changeScore(1)}>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6"
+                                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round"
+                                                                      strokeWidth={2} d="M12 4v16m8-8H4"/>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                    <span>/</span>
+                                                    <span>10</span>
                                                 </div>
-                                                <span>/</span>
-                                                <span>10</span>
+                                                <button
+                                                    className="px-3 py-2 bg-avocado-400 rounded font-pressStart"
+                                                    onClick={async () => {
+                                                        let userRating = null
+                                                        if (!userScore)
+                                                            userRating = await createRating(score, id, user.user.id)
+                                                        else
+                                                            userRating = await updateRating(score, id, user.user.id)
+                                                        setUserScore(userRating.rating)
+                                                        close()
+                                                    }}
+                                                >
+                                                    Оценить
+                                                </button>
                                             </div>
-                                            <button
-                                                className="px-3 py-2 bg-avocado-400 rounded font-pressStart"
-                                                onClick={async () => {
-                                                    let userRating = null
-                                                    if(!userScore)
-                                                        userRating = await createRating(score, id, user.user.id)
-                                                    else
-                                                        userRating = await updateRating(score, id, user.user.id)
-                                                    setUserScore(userRating.rating)
-                                                    close()
-                                                }}
-                                            >
-                                                Оценить
-                                            </button>
-                                        </div>
-                                    )}
-                                </Popover.Panel>
-                            </Popover>
+                                        )}
+                                    </Popover.Panel>
+                                </Popover>
+                            }
                         </div>
-                        <button
-                            className="px-3 py-2 bg-avocado-400 text-avocado-800 font-pressStart rounded"
-                            onClick={() => history.push('/update/games/' + id)}>
-                            Обновить
-                        </button>
+                        {user.isAuth &&
+                            <div className="flex  space-x-2">
+                                <button
+                                    className="px-3 py-2 bg-avocado-400 text-avocado-800 font-pressStart rounded"
+                                    onClick={() => history.push('/update/games/' + id)}>
+                                    Обновить
+                                </button>
+                                <button
+                                    className="bg-red-400 py-1 px-2 rounded flex items-center justify-center"
+                                    onClick={deleteGame}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        }
                     </div>
 
                     <div className="w-full flex justify-between">

@@ -3,45 +3,51 @@ import GameCard from '../components/GameCard';
 import {observer} from "mobx-react-lite";
 import {Context} from "../index";
 import {useHistory} from "react-router-dom";
-import {getAllGames} from "../http/gamesAPI";
+import {getAllGames, getAllPlatforms} from "../http/gamesAPI";
 
 const Games = observer(() => {
 
   const { user } = useContext(Context)
   const history = useHistory();
-  const [selectedSection, setSelectedSection] = useState('Все')
+  const [sections, setSections] = useState([])
+  const [selectedSection, setSelectedSection] = useState(-1)
   const [games, setGames] = useState([])
 
   useEffect(async ()   => {
     const data = await getAllGames()
+    const platforms = await getAllPlatforms()
+    setSections([{id: -1, title: 'Все'}, ...platforms])
     console.log(data)
     setGames(data)
   }, [])
 
-  const categories = [{ name: 'Все', filter: '' }, { name: 'PC', filter: 'PC' }, {
-    name: 'Xbox One',
-    filter: 'Xbox One'
-  },
-    { name: 'XBOX SERIES X|S', filter: 'Xbox Series X|S' }, { name: 'PLAYSTATION 4', filter: 'Playstation 4' },
-    { name: 'Playstation 5', filter: 'Playstation 5' }, { name: 'Nintendo Switch', filter: 'Nintendo Switch' },
-    { name: 'MMO', filter: 'mmo' }, { name: 'ИНДУСТРИЯ', filter: 'индустрия' },
-    { name: 'Киберспорт', filter: 'Киберспорт' }]
+  const changeSection = (id) => {
+    setSelectedSection(id)
+  }
+
+  const filteringContent = () => {
+    if (selectedSection && selectedSection > -1)
+    {
+      return games.filter(game => game.platforms.find( platform=> platform.id === selectedSection))
+    }
+    return  games
+  };
 
   return (
     <div className="flex-grow py-10">
       <div className='max-w-5xl mx-auto bg-white flex flex-grow min-h-44'>
-        <div className="w-1/5 bg-specialGray-600 bg-opacity-50 text-white py-3 flex flex-col font-pressStart">
+        <div className="w-60 bg-specialGray-600 bg-opacity-50 text-white py-3 flex flex-col font-pressStart">
           <p className="text-center pb-4">Категории</p>
-          {categories.map(item =>
-            <span key={'category_' + item.name} className={`py-3 px-4 
-                        ${selectedSection === item.name ?
+          {sections.length > 0 && sections.map(item =>
+            <span key={'category_' + item.id} className={`py-3 px-4 
+                        ${selectedSection === item.id ?
               'bg-avocado-400 text-avocado-800' : 'hover:bg-avocado-400 hover:text-avocado-800'} 
                             w-full uppercase text-xs`}
-                  onClick={() => setSelectedSection(item.name)}>{item.name}</span>
+                  onClick={() => changeSection(item.id)}>{item.title}</span>
           )}
 
         </div>
-        <div className="flex-grow py-2 space-y-4">
+        <div className="flex-1 py-2 space-y-4">
           <div className="flex items-center px-3">
             <span className="font-pressStart text-2xl flex-grow text-center">Игры</span>
             {user.isAuth &&
@@ -59,11 +65,14 @@ const Games = observer(() => {
           </div>
           <div className="px-3 grid grid-cols-4 gap-4">
             {
-              games && games.map(game => {
+              games.length > 0 && filteringContent().map(game => {
                 return <GameCard key={`game_${game.id}`} game={game} />
               })
             }
           </div>
+          {
+            filteringContent().length === 0 && <p className="font-pressStart text-center">Игры не найдены</p>
+          }
         </div>
       </div>
     </div>

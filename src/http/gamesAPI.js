@@ -53,3 +53,8 @@ export const getCover = async (coverName) => {
     const { data } = await $host.get('games/covers/'+ coverName)
     return data
 }
+
+export const getAllPlatforms = async () => {
+    const { data } = await $host.get('/platforms')
+    return data
+}

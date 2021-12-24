@@ -20,8 +20,10 @@ import {
     UPDATE_NEWS_ROUTE,
     CREATE_NEWS_ROUTE,
     CREATE_GAME_ROUTE,
-    UPDATE_GAME_ROUTE
+    UPDATE_GAME_ROUTE,
+    ANALYTICS_ROUTE
 } from "./utils/consts";
+import Analytics from "./pages/Analytics";
 
 export const authRoutes = [
     {
@@ -54,6 +56,10 @@ export const publicRoutes = [
     {
         path: MAIN_ROUTE,
         Component: MainPage
+    },
+    {
+        path: ANALYTICS_ROUTE,
+        Component: Analytics
     },
     {
         path: NEWS_ROUTE + '/:id',

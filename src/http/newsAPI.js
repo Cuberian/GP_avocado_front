@@ -35,12 +35,12 @@ export const updateNews = async (newsId, header, text, tags, image, coverAction)
 }
 
 export const getAll = async () => {
-    const { data } = await $authHost.get('/news')
+    const { data } = await $host.get('/news')
     return data
 }
 
 export const getById = async (id) => {
-    const { data } = await $authHost.get('/news/' + id)
+    const { data } = await $host.get('/news/' + id)
     return data
 }
 

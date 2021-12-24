@@ -35,12 +35,12 @@ export const updateGame = async (id, title, releaseDate, platforms, genres, stud
 }
 
 export const getAllGames = async () => {
-    const { data } = await $authHost.get('/games')
+    const { data } = await $host.get('/games')
     return data
 }
 
 export const getById = async (id) => {
-    const { data } = await $authHost.get('/games/' + id)
+    const { data } = await $host.get('/games/' + id)
     return data
 }
 

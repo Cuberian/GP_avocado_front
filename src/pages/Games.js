@@ -3,19 +3,20 @@ import GameCard from '../components/GameCard';
 import {observer} from "mobx-react-lite";
 import {Context} from "../index";
 import {useHistory} from "react-router-dom";
+import {getAllGames} from "../http/gamesAPI";
 
 const Games = observer(() => {
 
   const { user } = useContext(Context)
   const history = useHistory();
   const [selectedSection, setSelectedSection] = useState('Все')
+  const [games, setGames] = useState([])
 
-  const games = [
-    { gameId: 1, studio: 'Konami', label: 'Silent Hill 2' },
-    { gameId: 2, studio: 'Atlus', label: 'Persona 2: Innocent Sin' },
-    { gameId: 3, studio: 'Nintendo', label: 'Splatoon 2' },
-    { gameId: 4, studio: 'Arcane', label: 'Deathloop' }
-  ]
+  useEffect(async ()   => {
+    const data = await getAllGames()
+    console.log(data)
+    setGames(data)
+  }, [])
 
   const categories = [{ name: 'Все', filter: '' }, { name: 'PC', filter: 'PC' }, {
     name: 'Xbox One',
@@ -59,7 +60,7 @@ const Games = observer(() => {
           <div className="px-3 grid grid-cols-4 gap-4">
             {
               games && games.map(game => {
-                return <GameCard game={game} />
+                return <GameCard key={`game_${game.id}`} game={game} />
               })
             }
           </div>

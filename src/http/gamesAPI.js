@@ -4,37 +4,37 @@ export const createGame = async (title, releaseDate, platforms, genres, studios,
     const { data: createdGameData } = await $authHost.post('/games',
         {title, releaseDate, platforms, genres, studios, publishers})
 
-    // if(image) {
-    //     const formData = new FormData()
-    //     formData.append('newsId', String(createdGameData.id))
-    //     formData.append('file', image)
-    //     const {data: updatedGameData} = await $authHost.post('games/covers/upload',
-    //         formData, {headers: {'Content-Type': 'multipart/form-data'}})
-    //     return updatedGameData
-    // }
-    return createdGameData
-}
-
-export const updateGame = async (gameId, label, release_date, platforms, genres, developer, publisher, coverAction, image) => {
-    const { data: updatedGameData } = await $authHost.put('/news',
-        {label, release_date, platforms, genres, developer, publisher})
-
-    if(image && coverAction === 'update') {
+    if(image) {
         const formData = new FormData()
-        formData.append('newsId', String(updatedGameData.id))
+        formData.append('gameId', String(createdGameData.id))
         formData.append('file', image)
         const {data: updatedGameData} = await $authHost.post('games/covers/upload',
             formData, {headers: {'Content-Type': 'multipart/form-data'}})
         return updatedGameData
     }
+    return createdGameData
+}
+
+export const updateGame = async (id, title, releaseDate, platforms, genres, studios, publishers, coverAction, image) => {
+    const { data: updatedGameData } = await $authHost.put('/games',
+        {id, title, releaseDate, platforms, genres, studios, publishers})
+
+    if(image && coverAction === 'update') {
+        const formData = new FormData()
+        formData.append('gameId', String(updatedGameData.id))
+        formData.append('file', image)
+        const {data: updatedGameDataWithImage} = await $authHost.post('games/covers/upload',
+            formData, {headers: {'Content-Type': 'multipart/form-data'}})
+        return updatedGameDataWithImage
+    }
     else if(coverAction === 'delete')
     {
-         await $authHost.post('games/covers/delete', { gameId })
+         await $authHost.post('games/covers/delete', { gameId: id })
     }
     return updatedGameData
 }
 
-export const getAll = async () => {
+export const getAllGames = async () => {
     const { data } = await $authHost.get('/games')
     return data
 }

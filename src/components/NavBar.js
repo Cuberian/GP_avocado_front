@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import {Context} from "../index";
 import {NavLink, useHistory} from "react-router-dom";
 
-import {GAMES_ROUTE, LOGIN_ROUTE, MAIN_ROUTE, NEWS_ROUTE, PROFILE_ROUTE} from "../utils/consts";
+import {ANALYTICS_ROUTE, GAMES_ROUTE, LOGIN_ROUTE, MAIN_ROUTE, NEWS_ROUTE, PROFILE_ROUTE} from "../utils/consts";
 import {observer} from "mobx-react-lite";
 
 const NavBar = observer(() => {
@@ -29,7 +29,7 @@ const NavBar = observer(() => {
                     <NavLink to={MAIN_ROUTE} className="px-3 py-2 bg-specialGray-600 text-white hover:bg-avocado-400 hover:text-avocado-800">Главная</NavLink>
                     <NavLink to={NEWS_ROUTE} className="px-3 py-2 bg-specialGray-600 text-white hover:bg-avocado-400 hover:text-avocado-800">Новости</NavLink>
                     <NavLink to={NEWS_ROUTE} className="px-3 py-2 bg-specialGray-600 text-white hover:bg-avocado-400 hover:text-avocado-800">Статьи</NavLink>
-                    <NavLink to={NEWS_ROUTE} className="px-3 py-2 bg-specialGray-600 text-white hover:bg-avocado-400 hover:text-avocado-800">Аналитика</NavLink>
+                    <NavLink to={ANALYTICS_ROUTE} className="px-3 py-2 bg-specialGray-600 text-white hover:bg-avocado-400 hover:text-avocado-800">Аналитика</NavLink>
                     <NavLink to={GAMES_ROUTE} className="px-3 py-2 bg-specialGray-600 text-white hover:bg-avocado-400 hover:text-avocado-800">Игры</NavLink>
                     <NavLink to={GAMES_ROUTE} className="px-3 py-2 bg-specialGray-600 text-white hover:bg-avocado-400 hover:text-avocado-800">Поиск</NavLink>
                     {user.isAuth ?

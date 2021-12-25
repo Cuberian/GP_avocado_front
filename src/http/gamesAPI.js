@@ -58,3 +58,8 @@ export const getAllPlatforms = async () => {
     const { data } = await $host.get('/platforms')
     return data
 }
+
+export const getAllGenres = async () => {
+    const { data } = await $host.get('/genres')
+    return data
+}
